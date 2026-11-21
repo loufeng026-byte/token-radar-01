@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Launch Radar — pre-token protocol radar</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="prompt">$</span>
+    <h1>LAUNCH RADAR</h1>
+    <span class="version" id="modelVersion">radar-2</span>
+  </div>
+  <p class="tagline">Every pre-token protocol in the snapshot, ranked by expected launch value — fitted on the snapshot's own traded tokens, not on a hand-kept list.</p>
+  <p class="meta" id="snapshotMeta"></p>
+</header>
+
+<section class="kpis" id="kpis" aria-label="Headline figures"></section>
+
+<section class="controls">
+  <div class="tabs" role="tablist">
+    <button id="tabPre" class="tab active" role="tab" aria-selected="true">Pre-token board <span id="preCount"></span></button>
+    <button id="tabLive" class="tab" role="tab" aria-selected="false">Live tokens <span id="liveCount"></span></button>
+  </div>
+  <div class="filters">
+    <input id="search" type="search" placeholder="Search name or slug…" aria-label="Search protocols">
+    <select id="categoryFilter" aria-label="Filter by category"><option value="">All categories</option></select>
+    <select id="verdictFilter" aria-label="Filter by verdict">
+      <option value="">All verdicts</option>
+      <option value="FARM">FARM</option>
+      <option value="THIN">THIN</option>
+      <option value="SKIP">SKIP</option>
+    </select>
+  </div>
+</section>
+
+<main>
+  <table class="board" id="boardTable">
+    <thead>
+      <tr>
+        <th data-sort="rank" class="num">Rank</th>
+        <th data-sort="name">Protocol</th>
+        <th data-sort="category">Category</th>
+        <th data-sort="tvl_usd" class="num">TVL</th>
+        <th data-sort="change_7d" class="num">7d</th>
+        <th data-sort="age_days" class="num">Age</th>
+        <th data-sort="launch_value_usd" class="num">Launch value</th>
+        <th data-sort="token_odds" class="num">Token odds</th>
+        <th data-sort="implied_value_usd" class="num">Expected value</th>
+        <th data-sort="farm_verdict">Verdict</th>
+      </tr>
+    </thead>
+    <tbody id="boardBody"></tbody>
+  </table>
+  <p class="rowcount" id="rowCount"></p>
+
+  <table class="board live" id="liveTable" hidden>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Protocol</th>
+        <th>Category</th>
+        <th class="num">TVL</th>
+        <th class="num">Market cap</th>
+        <th class="num">7d</th>
+        <th class="num">Mcap / TVL</th>
+      </tr>
+    </thead>
+    <tbody id="liveBody"></tbody>
+  </table>
+  <p class="rowcount" id="liveNote" hidden></p>
+</main>
+
+<dialog id="detail">
+  <div class="detail-head">
+    <div>
+      <h2 id="detailName"></h2>
+      <p class="dim" id="detailSub"></p>
+    </div>
+    <button id="detailClose" aria-label="Close detail">✕</button>
+  </div>
+  <div id="detailBody"></div>
+</dialog>
+
+<section class="panel" id="modelPanel">
+  <h2>How the value is fitted <span class="dim">— read this before trusting a rank</span></h2>
+  <div class="model-grid">
+    <div class="model-card">
+      <h3>1 · Size curve — fitted, not assumed</h3>
+      <p class="formula" id="formulaLine"></p>
+      <p id="fitNote"></p>
+      <table class="mini" id="cvTable"></table>
+    </div>
+    <div class="model-card">
+      <h3>2 · No-token clock — launch odds by age</h3>
+      <p id="clockNote"></p>
+      <table class="mini" id="clockTable"></table>
+    </div>
+    <div class="model-card">
+      <h3>3 · Farm verdict — netted to break-even</h3>
+      <p id="verdictNote"></p>
+      <table class="mini" id="verdictTable"></table>
+    </div>
+    <div class="model-card">
+      <h3>4 · Census — all 758 protocols accounted for</h3>
+      <p id="censusNote"></p>
+      <table class="mini" id="censusTable"></table>
+      <p class="check" id="recomputeCheck"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Method: launch value from a log–log size curve fitted on the snapshot's traded tokens, times a bounded 7-day growth prior, times the no-token clock's launch odds. Farm plans are costed per protocol (capital by TVL, hold by age, gas + 5% APR opportunity cost) and netted to a FARM / THIN / SKIP verdict at a 5% farmer allocation. No network, no names hardcoded — run <code>main.ts</code> on a new snapshot and the whole board re-ranks itself.</p>
+  <p class="dim">Snapshot: frozen DefiLlama protocols. This page recomputes every row from the fitted coefficients it carries; the recompute check above shows the match.</p>
+</footer>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
